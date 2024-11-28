@@ -1,4 +1,5 @@
 const express = require('express');
+//const axios = require('axios');
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
@@ -26,7 +27,13 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  res.send(JSON.stringify(books,null,4));
+  //res.send(JSON.stringify(books,null,4)); //Original code
+  let allBooks = new Promise((resolve, reject) => {
+    resolve(JSON.stringify(books,null,4))
+  });
+  allBooks.then((message) => {
+    res.send(message);
+  })
 });
 
 // Get book details based on ISBN
@@ -37,16 +44,32 @@ public_users.get('/isbn/:isbn',function (req, res) {
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  const author = req.params.author;
+  /*const author = req.params.author;
   let filtered_books = Object.values(books).filter((book) => book.author === author);
-  res.send(filtered_books);
+  res.send(filtered_books);*/ // original code
+  let filterPromise = new Promise((resolve,reject) => {
+    const author = req.params.author;
+    let filtered_books = Object.values(books).filter((book) => book.author === author);
+    resolve(filtered_books);
+  })
+  filterPromise.then((message) => {
+    res.send(message);
+  })
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-    const title = req.params.title;
+    /*const title = req.params.title;
     let filtered_books = Object.values(books).filter((book) => book.title === title);
-    res.send(filtered_books);
+    res.send(filtered_books);*/ //old code
+    let titlePromise = new Promise((resolve,reject) => {
+        const title = req.params.title;
+        let filtered_books = Object.values(books).filter((book) => book.title === title);
+        resolve(filtered_books);
+    })
+    titlePromise.then((message) => {
+        res.send(message);
+    })
 });
 
 //  Get book review
