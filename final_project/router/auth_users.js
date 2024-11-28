@@ -36,7 +36,7 @@ regd_users.post("/login", (req,res) => {
         // Generate JWT access token
         let accessToken = jwt.sign({
             data: password
-        }, 'access', { expiresIn: 30 });
+        }, 'access', { expiresIn: 300 });
 
         // Store access token and username in session
         req.session.authorization = {
@@ -50,8 +50,14 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const isbn = req.params.isbn;
+  let user = req.body.username; //Making the assumption that username is still in body
+  let review = req.body.review;
+  let newMessage = {
+    "Review": review
+  };
+  books[isbn].reviews[user] = newMessage;
+  res.send(books[isbn].reviews);
 });
 
 module.exports.authenticated = regd_users;
