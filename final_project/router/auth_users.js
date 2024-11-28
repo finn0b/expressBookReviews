@@ -58,13 +58,28 @@ regd_users.post("/login", (req,res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   const isbn = req.params.isbn;
-  let user = req.session.authorization.username; //taking from authorisation
-  let review = req.query.review;
-  let newMessage = {
+  const user = req.session.authorization.username; //taking from authorisation
+  const review = req.query.review;
+  let finalMessage = "failure to read";
+  const newMessage = {
     "Review": review
   };
+  if (books[isbn].reviews[user]) { //Section only for final message
+     finalMessage = "updated"; //Exists, so the review is going to be updated
+  } else {
+    finalMessage = "uploaded"; //doesn't exist, so review is going to be uploaded
+  }
   books[isbn].reviews[user] = newMessage;
-  res.send(books[isbn].reviews);
+  res.send(`Review from ${user} has been ${finalMessage}`);
+});
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    const isbn = req.params.isbn;
+    const user = req.session.authorization.username;
+    if (isbn) { 
+        delete books[isbn].reviews[user];
+    }
+    res.send(`Review from ${user} has been deleted`);
 });
 
 module.exports.authenticated = regd_users;
